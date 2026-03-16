@@ -19,3 +19,5 @@ Wahrscheinlichkeit zeigt wie oft etwas vorkommen kann. Zum Beispiel: Ich habe ei
 # Lernziel 2
 
 Alle zahlen werden kommen immer näher und näher zu ihrer Wahrscheinlichkeit. Bei einem Würfel kommen alle zahlen zu ihrer Wahrscheinlichkeit, also ein sächstel, immer näher.
+# Lernziel 3
+Wenn ich ein Wüfel habe und ihn würfle.Nähert sich die relative Häufigkeit zu der Wahrscheinlichkeit. Also wenn ich zum Beispiel: 60000 mal würfle erhalte ich die nummer drei 99871 mal, was aufgerundet ein sächstel ist.
