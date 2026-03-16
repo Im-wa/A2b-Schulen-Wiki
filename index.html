@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Wiki</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --text-color: #333;
+            --accent-color: #555;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-color: #ccc;
+            transition: background-image 1s ease-in-out;
+        }
+
+        .wiki-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            max-width: 700px;
+            width: 90%;
+            margin: 20px;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+            padding-bottom: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* Normale Links (<a> mit href) anstelle von onclick */
+        .nav a {
+            text-decoration: none;
+            color: #666;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav a:hover { color: #000; }
+        .nav a.active { color: #000; border-bottom: 2px solid #000; }
+
+        .btn-add {
+            background: #28a745;
+            color: white !important; /* Überschreibt die Link-Farbe */
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            margin-left: auto;
+            border-bottom: none !important;
+        }
+
+        /* Inhaltsbereich */
+        .content { 
+            line-height: 1.6; 
+            overflow-y: auto; 
+            padding-right: 10px;
+            flex-grow: 1;
+        }
+        
+        .content h1 { margin-top: 0; font-weight: 300; }
+        .content h2 { font-weight: 400; color: #444; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .content img { max-width: 100%; border-radius: 8px; }
+
+        /* Kleiner Editor */
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            font-family: monospace;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        .controls { 
+            margin-top: 20px; 
+            padding-top: 20px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.9em;
+        }
+
+        button:hover { background: black; }
+    </style>
+</head>
+<body>
+
+<div class="wiki-container">
+    <div class="nav" id="navigation">
+        <a href="#home">Startseite</a>
+        <a href="#pflanzen">Pflanzen</a>
+        <a href="#tiere">Tiere</a>
+        <a href="#" class="btn-add" onclick="createNewPage(); return false;">+ Neu</a>
+    </div>
+    
+    <div class="content" id="wiki-content">
+        <p>Lade Inhalte...</p>
+    </div>
+    
+    <div class="controls">
+        <button onclick="editCurrentPage()" id="edit-btn" style="display:none;">Seite bearbeiten</button>
+        <button onclick="changeBackground()">Neues Bild</button>
+    </div>
+</div>
+
+<script>
+    let currentPage = 'home';
+
+    function changeBackground() {
+        const randomNum = Math.floor(Math.random() * 1000);
+        const imageUrl = `https://picsum.photos/1920/1080?nature,landscape&sig=${randomNum}`;
+        const img = new Image();
+        img.src = imageUrl;
+        img.onload = () => { document.body.style.backgroundImage = `url('${imageUrl}')`; };
+    }
+
+    // Diese Funktion liest die URL aus und lädt die passende Seite
+    async function handleHashChange() {
+        // Holt das Wort hinter dem '#' (oder 'home', wenn keins da ist)
+        let hash = window.location.hash.substring(1);
+        if (!hash) {
+            window.location.hash = 'home';
+            return; // Ändert die URL und löst das Event automatisch neu aus
+        }
+        
+        currentPage = hash;
+        const contentDiv = document.getElementById('wiki-content');
+        const editBtn = document.getElementById('edit-btn');
+        
+        // Aktiven Link im Menü markieren
+        document.querySelectorAll('.nav a:not(.btn-add)').forEach(a => {
+            a.classList.remove('active');
+            if (a.getAttribute('href') === '#' + hash) {
+                a.classList.add('active');
+            }
+        });
+
+        // 1. Lokalen Speicher prüfen
+        const localContent = localStorage.getItem('wiki_' + hash);
+        if (localContent) {
+            contentDiv.innerHTML = marked.parse(localContent);
+            editBtn.style.display = "inline-block";
+            return;
+        }
+
+        // 2. Von GitHub / Datei laden
+        try {
+            contentDiv.innerHTML = '<p>Lade...</p>';
+            const response = await fetch(hash + '.md');
+            
+            if (!response.ok) throw new Error('Seite nicht gefunden');
+            
+            const markdownText = await response.text();
+            contentDiv.innerHTML = marked.parse(markdownText);
+            editBtn.style.display = "none"; 
+        } catch (error) {
+            contentDiv.innerHTML = `
+                <h2>Seite nicht gefunden</h2>
+                <p>Die Seite <b>${hash}</b> existiert noch nicht.</p>
+                <button onclick="savePageContent('${hash}', '# ${hash}\\n\\nDein Text hier...')">Jetzt lokal erstellen</button>
+            `;
+            editBtn.style.display = "none";
+        }
+    }
+
+    // Stellt selbst erstellte Seiten wieder im Menü her, falls die Seite neu geladen wird
+    function restoreLocalLinks() {
+        const nav = document.getElementById('navigation');
+        const btnAdd = document.querySelector('.btn-add');
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('wiki_')) {
+                const pageName = key.replace('wiki_', '');
+                // Nur hinzufügen, wenn der Link nicht schon hartkodiert existiert
+                if (!document.querySelector(`.nav a[href="#${pageName}"]`)) {
+                    const newLink = document.createElement('a');
+                    newLink.textContent = pageName;
+                    newLink.setAttribute('href', '#' + pageName);
+                    nav.insertBefore(newLink, btnAdd);
+                }
+            }
+        }
+    }
+
+    function createNewPage() {
+        const pageName = prompt("Wie soll die neue Seite heißen? (z.B. 'ideen')");
+        if (pageName) {
+            // Leerzeichen entfernen und alles klein schreiben
+            const cleanName = pageName.toLowerCase().replace(/\s+/g, '-');
+            
+            // Leeren Inhalt speichern
+            savePageContent(cleanName, `# ${cleanName}\n\nFang an zu schreiben...`);
+            
+            // URL ändern (das löst den Seitenaufbau automatisch aus!)
+            window.location.hash = cleanName;
+            
+            // Neu ins Menü laden
+            restoreLocalLinks();
+        }
+    }
+
+    function editCurrentPage() {
+        const currentContent = localStorage.getItem('wiki_' + currentPage) || "";
+        const contentDiv = document.getElementById('wiki-content');
+        contentDiv.innerHTML = `
+            <textarea id="editor">${currentContent}</textarea>
+            <br>
+            <div style="margin-top: 10px;">
+                <button onclick="savePageContent('${currentPage}', document.getElementById('editor').value)">Speichern</button>
+                <button onclick="handleHashChange()" style="background:#555; margin-left: 10px;">Abbrechen</button>
+            </div>
+        `;
+    }
+
+    function savePageContent(pageName, content) {
+        localStorage.setItem('wiki_' + pageName, content);
+        handleHashChange(); // Seite nach dem Speichern neu laden
+    }
+
+    // Das ist der wichtigste Befehl: Er "hört" zu, wenn sich die URL ändert (z.B. beim Klick auf "Zurück" im Browser)
+    window.addEventListener('hashchange', handleHashChange);
+
+    // Beim Starten der Seite ausführen
+    window.onload = () => {
+        changeBackground();
+        restoreLocalLinks(); // Lokale Menüpunkte wiederherstellen
+        handleHashChange();  // Seite laden basierend auf der URL
+    };
+</script>
+
+</body>
+</html>
