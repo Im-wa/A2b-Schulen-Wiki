@@ -6,36 +6,28 @@
     <title>A2b Wiki</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* === CSS VARIABLEN (Theming) === 
-           Hier definieren wir die Farben für den hellen Modus (Standard).
-        */
+        /* === CSS VARIABLEN (Theming) === */
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.85); /* Helles, durchscheinendes Weiß */
-            --text-color: #333;                    /* Dunkelgrauer Text */
-            --heading-color: #111;                 /* Fast schwarze Überschriften */
-            --accent-color: #555;                  /* Akzentfarbe für Zitate */
-            --link-color: #666;                    /* Navigationslinks */
-            --link-hover: #000;                    /* Navigationslinks beim Drüberfahren */
-            --editor-bg: #fff;                     /* Hintergrund des Texteditors */
-            --editor-color: #333;                  /* Textfarbe im Editor */
-            --btn-bg: rgba(0,0,0,0.7);             /* Button Hintergrund */
-            --btn-hover: black;                    /* Button Hover */
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --text-color: #333;
+            --heading-color: #111;
+            --accent-color: #555;
+            --link-color: #666;
+            --link-hover: #000;
+            --btn-bg: rgba(0,0,0,0.7);
+            --btn-hover: black;
         }
 
-        /* === DARK MODE VARIABLEN ===
-           Wenn der body die Klasse 'dark-mode' hat, werden diese Werte benutzt.
-        */
+        /* === DARK MODE VARIABLEN === */
         body.dark-mode {
-            --glass-bg: rgba(30, 30, 30, 0.85);  /* Dunkles, durchscheinendes Grau */
-            --text-color: #ddd;                    /* Hellgrauer Text */
-            --heading-color: #fff;                 /* Weiße Überschriften */
-            --accent-color: #bbb;                  /* Hellerer Akzent */
-            --link-color: #aaa;                    /* Hellere Links */
-            --link-hover: #fff;                    /* Weiße Links beim Drüberfahren */
-            --editor-bg: #2d2d2d;                  /* Dunkler Editor-Hintergrund */
-            --editor-color: #eee;                  /* Heller Editor-Text */
-            --btn-bg: rgba(255,255,255,0.2);       /* Hellere, transparente Buttons */
-            --btn-hover: rgba(255,255,255,0.4);    /* Hellerer Hover */
+            --glass-bg: rgba(30, 30, 30, 0.85);
+            --text-color: #ddd;
+            --heading-color: #fff;
+            --accent-color: #bbb;
+            --link-color: #aaa;
+            --link-hover: #fff;
+            --btn-bg: rgba(255,255,255,0.2);
+            --btn-hover: rgba(255,255,255,0.4);
         }
 
         body {
@@ -45,7 +37,6 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            /* Ein Standard-Hintergrund, falls das Bild langsam lädt */
             background-color: #555;
             background-size: cover;
             background-position: center;
@@ -53,22 +44,20 @@
         }
 
         .wiki-container {
-            /* Nutzt jetzt die Variable für den Hintergrund */
             background: var(--glass-bg);
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px); /* Für Safari */
+            -webkit-backdrop-filter: blur(15px);
             max-width: 700px;
             width: 90%;
             margin: 20px;
             padding: 40px;
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            /* Nutzt die Variable für die Textfarbe */
             color: var(--text-color);
             display: flex;
             flex-direction: column;
             max-height: 90vh;
-            transition: background 0.3s, color 0.3s; /* Weicher Übergang beim Umschalten */
+            transition: background 0.3s, color 0.3s;
         }
 
         /* Navigation */
@@ -84,7 +73,6 @@
 
         .nav a {
             text-decoration: none;
-            /* Nutzt Variablen für Links */
             color: var(--link-color);
             font-weight: bold;
             cursor: pointer;
@@ -92,19 +80,7 @@
         }
 
         .nav a:hover { color: var(--link-hover); }
-        
-        /* Aktiver Link nutzt die normale Textfarbe */
         .nav a.active { color: var(--text-color); border-bottom: 2px solid var(--text-color); }
-
-        .btn-add {
-            background: #28a745 !important; /* Grün bleibt grün */
-            color: white !important;
-            padding: 3px 8px;
-            border-radius: 5px;
-            font-size: 0.8em;
-            margin-left: auto;
-            border-bottom: none !important;
-        }
 
         /* Inhaltsbereich */
         .content { 
@@ -114,41 +90,23 @@
             flex-grow: 1;
         }
         
-        /* Nutzt Variablen für Überschriften */
         .content h1 { margin-top: 0; font-weight: 300; color: var(--heading-color); }
         .content h2 { font-weight: 400; color: var(--heading-color); border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 5px; }
         .content img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
         .content blockquote { border-left: 4px solid var(--accent-color); padding-left: 15px; margin-left: 0; color: var(--accent-color); font-style: italic; }
-        /* Links im Text auch anpassen */
         .content a { color: var(--text-color); text-decoration: underline; }
 
-        /* Kleiner Editor */
-        textarea {
-            width: 100%;
-            height: 250px;
-            padding: 10px;
-            font-family: monospace;
-            border: 1px solid rgba(0,0,0,0.2);
-            border-radius: 5px;
-            margin-bottom: 10px;
-            resize: vertical;
-            box-sizing: border-box;
-            /* Editor passt sich auch dem Theme an */
-            background-color: var(--editor-bg);
-            color: var(--editor-color);
-        }
-
+        /* Buttons unten */
         .controls { 
             margin-top: 20px; 
             padding-top: 20px;
             border-top: 1px solid rgba(0,0,0,0.1);
             display: flex;
-            gap: 10px; /* Abstand zwischen den Buttons */
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         button {
-            /* Nutzt Variablen für Buttons */
             background: var(--btn-bg);
             color: var(--text-color);
             border: none;
@@ -161,77 +119,57 @@
 
         button:hover { background: var(--btn-hover); }
 
-        /* Ein spezieller Button, um den Modus zu wechseln */
-        #theme-toggle {
-            margin-left: auto; /* Schiebt ihn nach ganz rechts */
-        }
+        #theme-toggle { margin-left: auto; }
     </style>
 </head>
 <body>
 
 <div class="wiki-container">
     <div class="nav" id="navigation">
-        <a href="#" class="btn-add" onclick="createNewPage(); return false;">+ Neu</a>
-    </div>
+        </div>
     
     <div class="content" id="wiki-content">
         <p>Lade Inhalte...</p>
     </div>
     
     <div class="controls">
-        <button onclick="editCurrentPage()" id="edit-btn" style="display:none;">Seite bearbeiten</button>
         <button onclick="changeBackground()">Neues Bild</button>
         <button id="theme-toggle" onclick="toggleDarkMode()">🌓 Modus</button>
     </div>
 </div>
 
 <script>
+ 
+    const githubUser = 'Im-wa';
+    const githubRepo = 'A2b-Schulen-Wki';   
+    
 
-    const githubUser = 'Im-wa'; 
-    const githubRepo = 'A2b-Schulen-Wiki';   
-
-
-    let currentPage = 'home';
-
-    // --- NEU: Dark Mode Logik ---
+    // --- Dark Mode Logik ---
     function toggleDarkMode() {
-        // 1. Klasse 'dark-mode' auf dem body umschalten
         document.body.classList.toggle('dark-mode');
-        
-        // 2. Prüfen, ob der Modus jetzt an oder aus ist
-        let theme = 'light';
-        if (document.body.classList.contains('dark-mode')) {
-            theme = 'dark';
-        }
-        // 3. Die Einstellung im Browser speichern
+        let theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
         localStorage.setItem('themePreference', theme);
     }
 
-    // Beim Laden prüfen, ob der Nutzer den Dark Mode schon mal aktiviert hatte
     function loadThemePreference() {
-        const savedTheme = localStorage.getItem('themePreference');
-        if (savedTheme === 'dark') {
+        if (localStorage.getItem('themePreference') === 'dark') {
             document.body.classList.add('dark-mode');
         }
     }
 
-    // --- Bestehende Funktionen ---
-
+    // --- Hintergrund ---
     function changeBackground() {
-        // Nutzen wir eine etwas dunklere Natur-Kategorie für besseren Kontrast
         const randomNum = Math.floor(Math.random() * 1000);
         const imageUrl = `https://picsum.photos/1920/1080?nature,water,forest&sig=${randomNum}`;
-        // Kleiner Trick: Ein unsichtbares Bild laden, um Flackern zu verhindern
         const img = new Image();
         img.src = imageUrl;
-        img.onload = () => {
-             document.body.style.backgroundImage = `url('${imageUrl}')`;
-        };
+        img.onload = () => { document.body.style.backgroundImage = `url('${imageUrl}')`; };
     }
 
+    // --- Automatisches Menü ---
     async function buildMenuAutomatically() {
         const nav = document.getElementById('navigation');
-        const btnAdd = document.querySelector('.btn-add');
+        nav.innerHTML = ''; // Leert das Menü sicherheitshalber am Anfang
 
         try {
             const response = await fetch(`https://api.github.com/repos/${githubUser}/${githubRepo}/contents/`);
@@ -241,107 +179,61 @@
             files.forEach(file => {
                 if (file.name.endsWith('.md') && file.name.toLowerCase() !== 'readme.md') {
                     const pageName = file.name.replace('.md', '');
-                    if (!document.querySelector(`.nav a[href="#${pageName}"]`)) {
-                        const newLink = document.createElement('a');
-                        newLink.textContent = pageName.charAt(0).toUpperCase() + pageName.slice(1);
-                        newLink.setAttribute('href', '#' + pageName);
-                        nav.insertBefore(newLink, btnAdd);
-                    }
+                    
+                    const newLink = document.createElement('a');
+                    newLink.textContent = pageName.charAt(0).toUpperCase() + pageName.slice(1);
+                    newLink.setAttribute('href', '#' + pageName);
+                    nav.appendChild(newLink);
                 }
             });
         } catch (error) {
-            console.warn("GitHub API nicht erreichbar oder Repo-Daten fehlen. Lade lokale Daten.");
+            console.warn("GitHub API nicht erreichbar. Hast du User und Repo eingetragen?");
+            nav.innerHTML = '<span style="color:red; font-size:0.9em;">Menü konnte nicht geladen werden.</span>';
         }
-        restoreLocalLinks();
+        
+        // Nachdem das Menü gebaut wurde, laden wir den Inhalt
         handleHashChange();
     }
 
-    function restoreLocalLinks() {
-        const nav = document.getElementById('navigation');
-        const btnAdd = document.querySelector('.btn-add');
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key.startsWith('wiki_')) {
-                const pageName = key.replace('wiki_', '');
-                if (!document.querySelector(`.nav a[href="#${pageName}"]`)) {
-                    const newLink = document.createElement('a');
-                    newLink.textContent = pageName.charAt(0).toUpperCase() + pageName.slice(1) + " (Lokal)";
-                    newLink.setAttribute('href', '#' + pageName);
-                    newLink.style.fontStyle = "italic";
-                    nav.insertBefore(newLink, btnAdd);
-                }
-            }
-        }
-    }
-
+    // --- Seiteninhalt laden ---
     async function handleHashChange() {
         let hash = window.location.hash.substring(1);
         if (!hash) { window.location.hash = 'home'; return; }
         
-        currentPage = hash;
         const contentDiv = document.getElementById('wiki-content');
-        const editBtn = document.getElementById('edit-btn');
         
-        document.querySelectorAll('.nav a:not(.btn-add)').forEach(a => {
+        // Menü-Hervorhebung aktualisieren
+        document.querySelectorAll('.nav a').forEach(a => {
             a.classList.remove('active');
             if (a.getAttribute('href') === '#' + hash) a.classList.add('active');
         });
 
-        const localContent = localStorage.getItem('wiki_' + hash);
-        if (localContent) {
-            contentDiv.innerHTML = marked.parse(localContent);
-            editBtn.style.display = "inline-block";
-            return;
-        }
-
+        // Markdown-Datei abrufen
         try {
             contentDiv.innerHTML = '<p>Lade...</p>';
             const response = await fetch(hash + '.md');
             if (!response.ok) throw new Error('Seite nicht gefunden');
+            
             const markdownText = await response.text();
             contentDiv.innerHTML = marked.parse(markdownText);
-            editBtn.style.display = "none"; 
+            contentDiv.scrollTop = 0; // Nach oben scrollen
         } catch (error) {
-            contentDiv.innerHTML = `<h2>Seite nicht gefunden</h2><p>Die Seite <b>${hash}</b> existiert noch nicht.</p><button onclick="savePageContent('${hash}', '# ${hash}\\n\\nDein Text hier...')">Jetzt lokal erstellen</button>`;
-            editBtn.style.display = "none";
+            contentDiv.innerHTML = `
+                <h2>Fehler 404</h2>
+                <p>Die Seite <b>${hash}.md</b> konnte auf dem Server nicht gefunden werden.</p>
+                <p>Bitte stelle sicher, dass die Datei existiert und keine Sonderzeichen/Umlaute im Dateinamen hat.</p>
+            `;
         }
     }
 
-    function createNewPage() {
-        const pageName = prompt("Name der neuen Seite (z.B. 'ideen'):");
-        if (pageName) {
-            const cleanName = pageName.toLowerCase().replace(/\s+/g, '-');
-            savePageContent(cleanName, `# ${cleanName}\n\nFang an zu schreiben...`);
-            window.location.hash = cleanName;
-            restoreLocalLinks();
-        }
-    }
-
-    function editCurrentPage() {
-        const currentContent = localStorage.getItem('wiki_' + currentPage) || "";
-        const contentDiv = document.getElementById('wiki-content');
-        contentDiv.innerHTML = `
-            <textarea id="editor">${currentContent}</textarea>
-            <br>
-            <div style="margin-top: 10px; display: flex; gap: 10px;">
-                <button onclick="savePageContent('${currentPage}', document.getElementById('editor').value)">Speichern</button>
-                <button onclick="handleHashChange()" style="background: var(--accent-color);">Abbrechen</button>
-            </div>
-        `;
-    }
-
-    function savePageContent(pageName, content) {
-        localStorage.setItem('wiki_' + pageName, content);
-        handleHashChange(); 
-    }
-
+    // Hört auf URL-Änderungen (Zurück-Button im Browser)
     window.addEventListener('hashchange', handleHashChange);
 
-    // Beim Starten alles initialisieren
+    // Initialisierung beim Start
     window.onload = () => {
-        loadThemePreference(); // 1. Prüfen: Dark Mode an oder aus?
-        changeBackground();    // 2. Bild laden
-        buildMenuAutomatically(); // 3. Menü bauen
+        loadThemePreference();    // 1. Theme setzen
+        changeBackground();       // 2. Hintergrundbild laden
+        buildMenuAutomatically(); // 3. Menü von GitHub abrufen und erste Seite laden
     };
 </script>
 
