@@ -1,3 +1,7 @@
+#Beschreibung
+- Zufall is das Thema wo wir lernen wie man Häufigkeit ausrechnet und wie sie nützlich im altag sein kann
+
+
 # Musterlösung
 ## Lernziel 1
 
